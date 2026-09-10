@@ -1,0 +1,18 @@
+{
+  "name": "ms2-2026-g17",
+  "version": "1.0.0",
+  "description": "*Materia: Metodología de Sistemas II (MSII) - 2026  \r *Grupo: 17",
+  "main": "index.js",
+  "scripts": {
+  "start": "node src/server.js",
+  "dev": "node --watch src/server.js"
+},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+
+  
+}
