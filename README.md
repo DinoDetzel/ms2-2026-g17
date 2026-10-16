@@ -74,11 +74,17 @@ El proyecto utiliza actualmente:
 ```text
 ms2-2026-g17/
 │
+├── docs/
+│   ├── evidencia/
+│   │   └── script.original.js
+│   └── decisiones-diseno.md
+│
 ├── public/
 │   ├── css/
 │   │   └── style.css
 │   ├── js/
-│   │   └── app.js
+│   │   ├── app.js
+│   │   └── data.js
 │   └── index.html
 │
 ├── src/
@@ -180,34 +186,6 @@ La respuesta esperada es:
   "message": "Sistema de Bomberos funcionando"
 }
 ```
-## 🔄 Reproducibilidad
-
-El proyecto está preparado para que cualquier integrante del grupo pueda obtener el código y reconstruir el entorno de desarrollo utilizando únicamente el repositorio y la documentación disponible.
-
-Los pasos básicos para reproducir el proyecto son:
-```bash
-git clone https://github.com/DinoDetzel/ms2-2026-g17.git
-cd ms2-2026-g17
-npm install
-```
-Luego se debe configurar el archivo .env a partir de .env.example y ejecutar:
-```bash
-npm run dev
-```
-Las dependencias no se incluyen directamente en el repositorio mediante la carpeta node_modules, ya que pueden reconstruirse ejecutando npm install.
-
-El repositorio contiene:
-
-- package.json para declarar las dependencias del proyecto.
-- package-lock.json para registrar las versiones concretas de las dependencias.
-- .env.example para documentar las variables de entorno necesarias.
-- .gitignore para excluir archivos que no deben versionarse.
-
-## 🔐 Versionado y archivos ignorados
-
-La carpeta node_modules y los archivos de configuración locales, como .env, no se versionan.
-
-El objetivo es mantener en Git únicamente los archivos necesarios para reconstruir el proyecto, evitando incluir dependencias generadas, configuraciones locales o información sensible.
 
 ## 🚧 Estado actual
 
