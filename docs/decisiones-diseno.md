@@ -97,7 +97,7 @@ renderizarChecklist(listaItems, cont, tipo);
 ```
 
 - Evidencia: `public/js/app.js` (`obtenerControles`, `renderizarChecklist`, `generarGrilla`), `public/js/data.js` (`CONTROLES`) y `docs/evidencia/script.original.js` (código anterior).
-- Verificación: se simuló la app en un navegador de prueba (jsdom): login, 14 unidades AUTO y 13 entradas MAT (incluidas `CENTRAL` y `DESTACAMENTO`) con su checklist, combustible, observaciones y volver al menú. También se comprobó que, agregando `CONTROLES.AUTO[17]` en los datos, aparece el botón "U-17" y carga su checklist sin modificar ninguna función.
+- Verificación: probamos manualmente en `localhost:3000` las 14 unidades de Automotores y las 13 de Materiales (incluidas CENTRAL y DESTACAMENTO), las observaciones, y que `obtenerControles` devuelve `[]` con un warning ante un id inexistente. Agregando una unidad nueva solo en `data.js` aparece su botón sin modificar funciones. Todavía no tenemos tests automáticos; es una mejora pendiente.
 - Beneficios: se eliminaron las cadenas de condicionales; una unidad nueva requiere solo registrar su lista en `public/js/data.js`; se eliminó la dependencia del texto con `includes()` y la duplicación de ids.
 - Costos / trade-offs:
   - Un error de tipeo en una clave de `CONTROLES` devuelve una lista vacía (mitigado con `console.warn`, pero no falla de forma visible).

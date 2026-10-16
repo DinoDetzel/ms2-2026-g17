@@ -151,8 +151,6 @@ Ejemplo:
 
 `PORT=3000`
 
-El archivo .env no debe subirse al repositorio cuando contenga información sensible.
-
 ## ▶️ Ejecución
 
 Para iniciar el proyecto en modo desarrollo:
@@ -189,6 +187,4 @@ La respuesta esperada es:
 
 ## 🚧 Estado actual
 
-El proyecto se encuentra en una etapa inicial de desarrollo.
-
-La base técnica del proyecto ya se encuentra configurada utilizando Node.js y Express. En las siguientes etapas se incorporarán las funcionalidades correspondientes a los diferentes módulos del sistema.
+El proyecto se encuentra en desarrollo. Cuenta con la base técnica en Node.js y Express y con un prototipo funcional del frontend, que todavía no está conectado a una base de datos.
