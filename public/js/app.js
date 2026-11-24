@@ -1,17 +1,17 @@
 // Estado de la aplicación (declarado explícitamente, sin globals implícitos)
 let usuarioActivo = "";
 let unidadSeleccionada = "";
-let sectorActivo = "";
 
 // =========================================================
 // 1. INICIO DE SESIÓN
 // =========================================================
 function iniciarSesion() {
-    const nom = document.getElementById('nombre-login').value.trim();
-    const ape = document.getElementById('apellido-login').value.trim();
-    if (!nom || !ape) return alert("Por favor, ingresá nombre y apellido.");
+    const nom = document.getElementById('nombre-login').value;
+    const ape = document.getElementById('apellido-login').value;
+    const usuario = armarUsuario(nom, ape);
+    if (!usuario) return alert("Por favor, ingresá nombre y apellido.");
 
-    usuarioActivo = (nom + " " + ape).toUpperCase();
+    usuarioActivo = usuario;
     localStorage.setItem("usuarioBomberosConectado", usuarioActivo);
     ingresarAlSistema();
 }
@@ -21,8 +21,11 @@ function ingresarAlSistema() {
     document.getElementById('homeScreen').style.display = 'block';
 
     const display = document.getElementById('user-display-name');
-    if(display) {
-        display.innerHTML = `<span>${usuarioActivo}</span>`;
+    if (display) {
+        // textContent en vez de innerHTML: el nombre lo escribe el usuario
+        const span = document.createElement('span');
+        span.textContent = usuarioActivo;
+        display.replaceChildren(span);
     }
 
     generarGrillaUnidades();
@@ -83,7 +86,7 @@ function generarGrilla(idContenedor, sector, prefijo) {
     Object.keys(CONTROLES[sector]).forEach(id => {
         const btn = document.createElement('div');
         btn.className = 'btn-unidad';
-        btn.innerText = (id === 'CENTRAL' || id === 'DESTACAMENTO') ? id : prefijo + id;
+        btn.innerText = etiquetaBoton(id, prefijo);
         btn.onclick = (e) => { e.stopPropagation(); seleccionarUnidad(id, sector, btn); };
         contenedor.appendChild(btn);
     });
@@ -96,18 +99,11 @@ function generarGrillaMateriales() { generarGrilla('grilla-materiales', 'MAT', '
 // 3. FUNCIÓN REFACTORIZADA (TALLER II)
 // =========================================================
 
-function obtenerControles(sector, id) {
-    const lista = CONTROLES[sector]?.[id];
-    if (!lista) console.warn(`Sin controles definidos para ${sector} / ${id}`);
-    return lista ?? [];
-}
+// obtenerControles, nombreUnidad y etiquetaBoton estan en controles.js
+// (sin DOM) para poder probarlas con tests automaticos.
 
 function seleccionarUnidad(num, tipo, btn) {
-    sectorActivo = tipo;
-
-    if (num === 'CENTRAL') unidadSeleccionada = "MAT CENTRAL";
-    else if (num === 'DESTACAMENTO') unidadSeleccionada = "MAT DESTACAMENTO";
-    else unidadSeleccionada = tipo === 'AUTO' ? "UNIDAD " + num : "MAT U-" + num;
+    unidadSeleccionada = nombreUnidad(tipo, num);
 
     document.querySelectorAll('.btn-unidad').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -119,22 +115,25 @@ function seleccionarUnidad(num, tipo, btn) {
     document.getElementById('contenedor-km').style.display = tipo === 'AUTO' ? 'block' : 'none';
 
     // --- REFACTORING CLEAN CODE: ELIMINACIÓN DE CONDICIONALES ---
-    const listaItems = obtenerControles(tipo, num);
+    const listaItems = obtenerControles(CONTROLES, tipo, num);
 
     // --- REFACTORING CLEAN CODE: EXTRACT METHOD ---
     renderizarChecklist(listaItems, cont, tipo);
 }
 
-// Función extraída para cumplir SRP y limpiar HTML de JS principal
+// Función extraída para cumplir SRP y limpiar HTML de JS principal.
+// Arma todo el HTML en un array y lo asigna una sola vez: con innerHTML += dentro
+// del bucle el navegador volvia a parsear todo el contenedor en cada item.
 function renderizarChecklist(listaItems, cont, tipo) {
     let currentCat = "";
+    const partes = [];
     listaItems.forEach((c, idx) => {
         if (c.cat && c.cat !== currentCat) {
             currentCat = c.cat;
-            cont.innerHTML += `<h3 class="categoria-titulo">${currentCat}</h3>`;
+            partes.push(`<h3 class="categoria-titulo">${currentCat}</h3>`);
         }
         if (c.tipo === "combustible") {
-            cont.innerHTML += `
+            partes.push(`
                 <div class="check-item-container">
                     <div class="check-item-row" style="display:block;">
                         <span class="item-combustible-titulo">${c.item}</span>
@@ -146,18 +145,18 @@ function renderizarChecklist(listaItems, cont, tipo) {
                             <div class="fuel-btn" onclick="setFuel('LLENO', this)">LLENO</div>
                         </div>
                     </div>
-                </div>`;
+                </div>`);
         } else if (c.tipo === "escritura") {
-            cont.innerHTML += `
+            partes.push(`
                 <div class="check-item-container item-escritura">
                     <div class="check-item-row" style="display:block;">
                         <div style="margin-bottom:5px; font-weight:bold;">${c.item}</div>
                         <input type="text" id="input-escritura-${idx}" placeholder="Escriba aquí..." class="form-input" style="width:100%;">
                     </div>
-                </div>`;
+                </div>`);
         } else {
-            let mostrarCantidad = (tipo === 'MAT' && c.cant) ? `<span class="cantidad-material">(Cant: ${c.cant})</span>` : "";
-            cont.innerHTML += `
+            const mostrarCantidad = (tipo === 'MAT' && c.cant) ? `<span class="cantidad-material">(Cant: ${c.cant})</span>` : "";
+            partes.push(`
                 <div class="check-item-container">
                     <div class="check-item-row">
                         <span>${c.item} ${mostrarCantidad}</span>
@@ -169,9 +168,10 @@ function renderizarChecklist(listaItems, cont, tipo) {
                     <div id="obs-container-${idx}" style="display:none;">
                         <textarea id="obs-${idx}" class="form-input obs-textarea" placeholder="Detalle el problema..."></textarea>
                     </div>
-                </div>`;
+                </div>`);
         }
     });
+    cont.innerHTML = partes.join("");
 }
 
 function setFuel(val, btn) {
