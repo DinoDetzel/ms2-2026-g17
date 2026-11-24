@@ -2332,3 +2332,7 @@ const CONTROLES = {
         16: CONTROLES_U16_MAT
     }
 };
+
+if (typeof module !== "undefined" && module.exports) {
+    module.exports = { CONTROLES };
+}

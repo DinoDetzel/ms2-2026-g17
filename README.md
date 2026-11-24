@@ -69,29 +69,53 @@ El proyecto utiliza actualmente:
 
 `JavaScript` — lógica del frontend.
 
+Herramientas de desarrollo:
+
+`node:test` y `supertest` — tests automatizados.
+
+`ESLint` — analisis estatico del codigo.
+
+`GitHub Actions` — corre lint y tests en cada push o pull request a `main` y `dev`.
+
 ## 📁 Estructura del proyecto
 
 ```text
 ms2-2026-g17/
 │
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+│
 ├── docs/
 │   ├── evidencia/
+│   │   ├── eslint-antes.txt
+│   │   ├── eslint-despues.txt
 │   │   └── script.original.js
-│   └── decisiones-diseno.md
+│   ├── calidad.md
+│   ├── decisiones-diseno.md
+│   └── testing.md
 │
 ├── public/
 │   ├── css/
 │   │   └── style.css
 │   ├── js/
-│   │   ├── app.js
-│   │   └── data.js
+│   │   ├── app.js          (interfaz, usa el DOM)
+│   │   ├── controles.js    (logica sin DOM, se testea)
+│   │   └── data.js         (checklists por unidad)
 │   └── index.html
 │
 ├── src/
-│   └── server.js
+│   ├── app.js              (app de Express, se testea)
+│   └── server.js           (arranca el servidor)
+│
+├── test/
+│   ├── api.test.js
+│   ├── controles.test.js
+│   └── datos.test.js
 │
 ├── .env.example
 ├── .gitignore
+├── eslint.config.js
 ├── package.json
 ├── package-lock.json
 └── README.md
@@ -185,6 +209,41 @@ La respuesta esperada es:
 }
 ```
 
+## ✅ Tests
+
+Los tests estan en la carpeta `test/` y usan `node:test` (incluido en Node) y `supertest`.
+
+```bash
+npm test
+```
+
+Con reporte de cobertura:
+
+```bash
+npm run test:coverage
+```
+
+Que se prueba:
+
+- `test/api.test.js`: endpoint `/api/health`, rutas inexistentes y archivos estaticos.
+- `test/controles.test.js`: `obtenerControles`, nombres de unidades y validacion del login, con casos normales, limite y de error.
+- `test/datos.test.js`: que los checklists de `data.js` esten bien cargados.
+
+Si todo esta bien la salida termina con `fail 0`. Los tests marcados como `todo` son problemas detectados en los datos que todavia no corregimos; se muestran pero no hacen fallar la corrida.
+
+El detalle de cada caso y por que lo elegimos esta en [docs/testing.md](docs/testing.md).
+
+## 🔍 Calidad de codigo
+
+```bash
+npm run lint     # ESLint
+npm run check    # lint + tests
+```
+
+Que encontramos con ESLint y los tests, y que cambiamos: [docs/calidad.md](docs/calidad.md).
+
 ## 🚧 Estado actual
 
 El proyecto se encuentra en desarrollo. Cuenta con la base técnica en Node.js y Express y con un prototipo funcional del frontend, que todavía no está conectado a una base de datos.
+
+Tiene tests automatizados del backend, de la logica del checklist y de los datos. La interfaz (navegacion y pantallas) todavia se prueba a mano.
