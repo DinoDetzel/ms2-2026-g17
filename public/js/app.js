@@ -121,57 +121,114 @@ function seleccionarUnidad(num, tipo, btn) {
     renderizarChecklist(listaItems, cont, tipo);
 }
 
+// Crea un elemento con clase y texto opcionales. El texto se asigna con textContent:
+// si un control contiene HTML se muestra como texto y nunca se interpreta.
+function crearElemento(etiqueta, clase, texto) {
+    const elemento = document.createElement(etiqueta);
+    if (clase) elemento.className = clase;
+    if (texto !== undefined) elemento.textContent = texto;
+    return elemento;
+}
+
+const OPCIONES_COMBUSTIBLE = ['VACIO', '1/4', '1/2', '3/4', 'LLENO'];
+
+function crearItemCombustible(control) {
+    const opciones = crearElemento('div', 'fuel-options');
+    OPCIONES_COMBUSTIBLE.forEach(valor => {
+        const boton = crearElemento('div', 'fuel-btn', valor);
+        boton.addEventListener('click', () => setFuel(valor, boton));
+        opciones.appendChild(boton);
+    });
+
+    const fila = crearElemento('div', 'check-item-row');
+    fila.style.display = 'block';
+    fila.append(crearElemento('span', 'item-combustible-titulo', control.item), opciones);
+
+    const contenedor = crearElemento('div', 'check-item-container');
+    contenedor.appendChild(fila);
+    return contenedor;
+}
+
+function crearItemEscritura(control, idx) {
+    const titulo = crearElemento('div', '', control.item);
+    titulo.style.marginBottom = '5px';
+    titulo.style.fontWeight = 'bold';
+
+    const entrada = crearElemento('input', 'form-input');
+    entrada.type = 'text';
+    entrada.id = `input-escritura-${idx}`;
+    entrada.placeholder = 'Escriba aquí...';
+    entrada.style.width = '100%';
+
+    const fila = crearElemento('div', 'check-item-row');
+    fila.style.display = 'block';
+    fila.append(titulo, entrada);
+
+    const contenedor = crearElemento('div', 'check-item-container item-escritura');
+    contenedor.appendChild(fila);
+    return contenedor;
+}
+
+function crearOpcionBienMal(idx, valor, texto, mostrarObservacion) {
+    const radio = crearElemento('input');
+    radio.type = 'radio';
+    radio.name = `ctrl-${idx}`;
+    radio.value = valor;
+    radio.addEventListener('click', () => toggleObs(idx, mostrarObservacion));
+
+    const etiqueta = crearElemento('label');
+    etiqueta.append(radio, ` ${texto}`);
+    return etiqueta;
+}
+
+function crearItemControl(control, idx, tipo) {
+    const descripcion = crearElemento('span', '', control.item);
+    if (tipo === 'MAT' && control.cant) {
+        descripcion.append(' ', crearElemento('span', 'cantidad-material', `(Cant: ${control.cant})`));
+    }
+
+    const acciones = crearElemento('div', 'item-actions');
+    acciones.append(
+        crearOpcionBienMal(idx, 'bien', 'Bien', false),
+        crearOpcionBienMal(idx, 'mal', 'Mal', true)
+    );
+
+    const fila = crearElemento('div', 'check-item-row');
+    fila.append(descripcion, acciones);
+
+    const observacion = crearElemento('textarea', 'form-input obs-textarea');
+    observacion.id = `obs-${idx}`;
+    observacion.placeholder = 'Detalle el problema...';
+
+    const contenedorObs = crearElemento('div');
+    contenedorObs.id = `obs-container-${idx}`;
+    contenedorObs.style.display = 'none';
+    contenedorObs.appendChild(observacion);
+
+    const contenedor = crearElemento('div', 'check-item-container');
+    contenedor.append(fila, contenedorObs);
+    return contenedor;
+}
+
 // Función extraída para cumplir SRP y limpiar HTML de JS principal.
-// Arma todo el HTML en un array y lo asigna una sola vez: con innerHTML += dentro
-// del bucle el navegador volvia a parsear todo el contenedor en cada item.
+// Arma todo en un fragmento y lo inserta una sola vez (antes se hacía innerHTML += por cada ítem).
 function renderizarChecklist(listaItems, cont, tipo) {
+    const fragmento = document.createDocumentFragment();
     let currentCat = "";
-    const partes = [];
     listaItems.forEach((c, idx) => {
         if (c.cat && c.cat !== currentCat) {
             currentCat = c.cat;
-            partes.push(`<h3 class="categoria-titulo">${currentCat}</h3>`);
+            fragmento.appendChild(crearElemento('h3', 'categoria-titulo', currentCat));
         }
         if (c.tipo === "combustible") {
-            partes.push(`
-                <div class="check-item-container">
-                    <div class="check-item-row" style="display:block;">
-                        <span class="item-combustible-titulo">${c.item}</span>
-                        <div class="fuel-options">
-                            <div class="fuel-btn" onclick="setFuel('VACIO', this)">VACIO</div>
-                            <div class="fuel-btn" onclick="setFuel('1/4', this)">1/4</div>
-                            <div class="fuel-btn" onclick="setFuel('1/2', this)">1/2</div>
-                            <div class="fuel-btn" onclick="setFuel('3/4', this)">3/4</div>
-                            <div class="fuel-btn" onclick="setFuel('LLENO', this)">LLENO</div>
-                        </div>
-                    </div>
-                </div>`);
+            fragmento.appendChild(crearItemCombustible(c));
         } else if (c.tipo === "escritura") {
-            partes.push(`
-                <div class="check-item-container item-escritura">
-                    <div class="check-item-row" style="display:block;">
-                        <div style="margin-bottom:5px; font-weight:bold;">${c.item}</div>
-                        <input type="text" id="input-escritura-${idx}" placeholder="Escriba aquí..." class="form-input" style="width:100%;">
-                    </div>
-                </div>`);
+            fragmento.appendChild(crearItemEscritura(c, idx));
         } else {
-            const mostrarCantidad = (tipo === 'MAT' && c.cant) ? `<span class="cantidad-material">(Cant: ${c.cant})</span>` : "";
-            partes.push(`
-                <div class="check-item-container">
-                    <div class="check-item-row">
-                        <span>${c.item} ${mostrarCantidad}</span>
-                        <div class="item-actions">
-                            <label><input type="radio" name="ctrl-${idx}" value="bien" onclick="toggleObs(${idx}, false)"> Bien</label>
-                            <label><input type="radio" name="ctrl-${idx}" value="mal" onclick="toggleObs(${idx}, true)"> Mal</label>
-                        </div>
-                    </div>
-                    <div id="obs-container-${idx}" style="display:none;">
-                        <textarea id="obs-${idx}" class="form-input obs-textarea" placeholder="Detalle el problema..."></textarea>
-                    </div>
-                </div>`);
+            fragmento.appendChild(crearItemControl(c, idx, tipo));
         }
     });
-    cont.innerHTML = partes.join("");
+    cont.appendChild(fragmento);
 }
 
 function setFuel(val, btn) {

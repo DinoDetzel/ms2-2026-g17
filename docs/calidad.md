@@ -52,7 +52,7 @@ Tambien agregamos un 404 en JSON para las rutas `/api` que no existen.
 ### 4. innerHTML dentro del bucle (pendiente del Taller II)
 
 En `docs/decisiones-diseno.md` habiamos dejado anotado que `renderizarChecklist` usaba `cont.innerHTML +=` por cada item. Cada `+=` obliga al navegador a volver a parsear todo el contenido del contenedor (MAT U-9 tiene 271 items).
-Ahora el HTML se junta en un array y se asigna una sola vez con `cont.innerHTML = partes.join("")`.
+Ahora cada item se arma con `createElement` dentro de un `DocumentFragment` y se inserta una sola vez en el contenedor; los textos se asignan con `textContent`, así que si un control contiene HTML se muestra como texto.
 
 ### 5. Nombre de usuario con innerHTML
 
