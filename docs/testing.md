@@ -35,9 +35,9 @@ npm run check
 Salida actual de `npm test` (resumen):
 
 ```text
-ℹ tests 32
+ℹ tests 33
 ℹ suites 7
-ℹ pass 30
+ℹ pass 31
 ℹ fail 0
 ℹ todo 2
 ```
@@ -82,6 +82,7 @@ Revisan los checklists de `public/js/data.js`. Como para agregar una unidad alca
 - Existen los sectores `AUTO` y `MAT`, y `MAT` incluye `CENTRAL` y `DESTACAMENTO`.
 - Ninguna lista esta vacia.
 - Todos los items tienen `cat` e `item` con texto.
+- Todos los items tienen `cant` con texto. En automotores vale `"-"` porque no aplica. En materiales, si falta, `renderizarChecklist` no muestra la cantidad y el error pasa desapercibido.
 - El `tipo` de cada item es uno de los que sabe dibujar `renderizarChecklist` (`combustible`, `escritura` o ninguno).
 - Cada unidad de automotores tiene el control de combustible.
 
