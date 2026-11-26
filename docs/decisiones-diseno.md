@@ -104,4 +104,4 @@ renderizarChecklist(listaItems, cont, tipo);
   - El orden de los botones depende del orden de las claves del objeto (números ascendentes y luego textos como `CENTRAL`).
   - `CONTROLES` sigue siendo una variable global y depende del orden de carga de los scripts (`public/js/data.js` antes que `public/js/app.js`).
   - Los datos están en JavaScript y se cargan siempre; a mayor tamaño convendría pasarlos a JSON.
-  - Resuelto en Taller III: `renderizarChecklist` ya no usa `innerHTML +=`; arma los elementos con `createElement` y los inserta una sola vez. Evidencia en `docs/evidencia/innerhtml-antes-despues.md`.
+  - Resuelto en Taller III: `renderizarChecklist` ya no usa `innerHTML +=`; arma los elementos con `createElement` y los inserta una sola vez. Detalle en `docs/calidad.md`.

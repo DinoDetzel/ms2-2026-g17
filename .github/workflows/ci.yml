@@ -1,4 +1,4 @@
-# Integración continua: en cada push y pull request ejecuta el lint y, si existen, los tests.
+# Integración continua: en cada push y pull request ejecuta el lint y los tests.
 name: CI
 
 on:
@@ -24,5 +24,5 @@ jobs:
       - name: Lint (ESLint)
         run: npm run lint
 
-      - name: Tests (se saltea si todavía no hay script "test")
-        run: npm test --if-present
+      - name: Tests (node:test)
+        run: npm test

@@ -1,17 +1,17 @@
 // Estado de la aplicación (declarado explícitamente, sin globals implícitos)
 let usuarioActivo = "";
 let unidadSeleccionada = "";
-let sectorActivo = "";
 
 // =========================================================
 // 1. INICIO DE SESIÓN
 // =========================================================
 function iniciarSesion() {
-    const nom = document.getElementById('nombre-login').value.trim();
-    const ape = document.getElementById('apellido-login').value.trim();
-    if (!nom || !ape) return alert("Por favor, ingresá nombre y apellido.");
+    const nom = document.getElementById('nombre-login').value;
+    const ape = document.getElementById('apellido-login').value;
+    const usuario = armarUsuario(nom, ape);
+    if (!usuario) return alert("Por favor, ingresá nombre y apellido.");
 
-    usuarioActivo = (nom + " " + ape).toUpperCase();
+    usuarioActivo = usuario;
     localStorage.setItem("usuarioBomberosConectado", usuarioActivo);
     ingresarAlSistema();
 }
@@ -21,10 +21,11 @@ function ingresarAlSistema() {
     document.getElementById('homeScreen').style.display = 'block';
 
     const display = document.getElementById('user-display-name');
-    if(display) {
-        const nombre = document.createElement('span');
-        nombre.textContent = usuarioActivo;
-        display.replaceChildren(nombre);
+    if (display) {
+        // textContent en vez de innerHTML: el nombre lo escribe el usuario
+        const span = document.createElement('span');
+        span.textContent = usuarioActivo;
+        display.replaceChildren(span);
     }
 
     generarGrillaUnidades();
@@ -85,7 +86,7 @@ function generarGrilla(idContenedor, sector, prefijo) {
     Object.keys(CONTROLES[sector]).forEach(id => {
         const btn = document.createElement('div');
         btn.className = 'btn-unidad';
-        btn.innerText = (id === 'CENTRAL' || id === 'DESTACAMENTO') ? id : prefijo + id;
+        btn.innerText = etiquetaBoton(id, prefijo);
         btn.onclick = (e) => { e.stopPropagation(); seleccionarUnidad(id, sector, btn); };
         contenedor.appendChild(btn);
     });
@@ -98,18 +99,11 @@ function generarGrillaMateriales() { generarGrilla('grilla-materiales', 'MAT', '
 // 3. FUNCIÓN REFACTORIZADA (TALLER II)
 // =========================================================
 
-function obtenerControles(sector, id) {
-    const lista = CONTROLES[sector]?.[id];
-    if (!lista) console.warn(`Sin controles definidos para ${sector} / ${id}`);
-    return lista ?? [];
-}
+// obtenerControles, nombreUnidad y etiquetaBoton estan en controles.js
+// (sin DOM) para poder probarlas con tests automaticos.
 
 function seleccionarUnidad(num, tipo, btn) {
-    sectorActivo = tipo;
-
-    if (num === 'CENTRAL') unidadSeleccionada = "MAT CENTRAL";
-    else if (num === 'DESTACAMENTO') unidadSeleccionada = "MAT DESTACAMENTO";
-    else unidadSeleccionada = tipo === 'AUTO' ? "UNIDAD " + num : "MAT U-" + num;
+    unidadSeleccionada = nombreUnidad(tipo, num);
 
     document.querySelectorAll('.btn-unidad').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
@@ -121,7 +115,7 @@ function seleccionarUnidad(num, tipo, btn) {
     document.getElementById('contenedor-km').style.display = tipo === 'AUTO' ? 'block' : 'none';
 
     // --- REFACTORING CLEAN CODE: ELIMINACIÓN DE CONDICIONALES ---
-    const listaItems = obtenerControles(tipo, num);
+    const listaItems = obtenerControles(CONTROLES, tipo, num);
 
     // --- REFACTORING CLEAN CODE: EXTRACT METHOD ---
     renderizarChecklist(listaItems, cont, tipo);
