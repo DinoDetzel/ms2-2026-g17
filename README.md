@@ -37,23 +37,30 @@ El objetivo principal es facilitar el seguimiento del mantenimiento y permitir q
 
 - Facilitar el acceso a la información necesaria para mantener las unidades y equipamientos en condiciones operativas.
 
-## 🚒 Funcionalidades previstas
+## ✅ Funcionalidades actuales
 
-- Control de unidades
+Lo que se puede usar hoy al ejecutar el proyecto en `http://localhost:3000`:
 
-- Permitirá realizar el seguimiento de los vehículos del cuartel, incluyendo: `Estado operativo`, `kilometraje`, `vencimientos importantes`, `información relacionada con el mantenimiento`, `gestión de inventario y materiales`.
+- **Ingreso al sistema:** se ingresa con nombre y apellido (ambos obligatorios). El navegador recuerda la sesión hasta que se presiona `CERRAR SESIÓN`.
+- **Menú de sectores:** acceso a `Materiales`, `Automotores` y `Electricidad`, junto con los datos de los encargados de cada sector.
+- **Automotores:** grilla con las 14 unidades del cuartel. Al elegir una se muestra su checklist de control, con carga del nivel de combustible y del kilometraje actual.
+- **Materiales:** grilla con las unidades que llevan equipamiento, más `CENTRAL` y `DESTACAMENTO`. Cada checklist muestra la cantidad que debería haber de cada elemento.
+- **Checklists de control:** cada ítem se marca como `Bien` o `Mal`; al marcar `Mal` se habilita un campo para detallar el problema. Algunos ítems piden un dato escrito (por ejemplo, horas de uso o cantidad de aire de un cilindro). Cada control incluye la fecha en que se realiza.
+- **Agregar unidades:** las grillas y los checklists se generan a partir de `public/js/data.js`, así que para sumar una unidad alcanza con cargar su lista ahí.
 
-- Permitirá administrar el stock y estado de herramientas y equipamiento especializado.
+> **Importante:** el botón `GUARDAR CONTROL` todavía es una simulación. Los datos cargados en un checklist no se guardan y se pierden al salir o recargar la página.
 
-- Se contemplan diferentes áreas, entre ellas: `Trauma`, `rescate en altura`, `riesgo eléctrico`, `equipos de Respiración Autónoma (E.R.A.)`, `gestión de tareas de electricidad`.
+## 🚒 Funcionalidades a implementar
 
-- Permitirá registrar y gestionar tareas relacionadas con: `Luces de autobombas`, `instalaciones eléctricas del cuartel`, `revisiones periódicas`.
+Lo que está planificado y todavía no está implementado:
 
-- El sistema contará con checklists para realizar controles de rutina.
-
-- Las revisiones permitirán: `Verificar el estado de los elementos`, `registrar observaciones`, `detectar fallas`, `dejar constancia de las revisiones realizadas`, `alertas y tareas`.
-
-- Permitirá visualizar y gestionar: `Tareas pendientes`, `mantenimientos necesarios`, `equipos que requieren revisión`.
+- **Guardado de los controles:** registrar cada revisión con su fecha, responsable, resultados y observaciones, para dejar constancia y consultar el historial. Requiere incorporar persistencia (por ejemplo, una base de datos).
+- **Sector Electricidad:** gestión de tareas sobre las luces de las autobombas y las instalaciones eléctricas del cuartel. Hoy el botón solo muestra un aviso de que está en construcción.
+- **Inventario y stock:** administrar altas, bajas y el estado de herramientas y equipamiento especializado (trauma, rescate en altura, riesgo eléctrico, equipos de respiración autónoma).
+- **Vencimientos y alertas:** seguimiento de VTV, services y otros vencimientos de las unidades, con avisos de lo que requiere atención.
+- **Tareas pendientes:** listado de mantenimientos necesarios y equipos que requieren revisión, generado a partir de los controles con ítems en `Mal`.
+- **Usuarios y permisos:** inicio de sesión real con contraseña y roles (por ejemplo, encargado de sector y administrador).
+- **Checklists desde el backend:** servir los checklists desde la API en lugar de cargarlos en el navegador con `data.js`.
 
 ## 🛠️ Tecnologías
 
@@ -73,7 +80,7 @@ Herramientas de desarrollo:
 
 `node:test` y `supertest` — tests automatizados.
 
-`ESLint` — analisis estatico del codigo.
+`ESLint` — análisis estático del código.
 
 `GitHub Actions` — corre lint y tests en cada push o pull request a `main` y `dev`.
 
@@ -141,7 +148,9 @@ npm --version
 ```bash
 git --version
 ```
-Se recomienda utilizar la misma versión de Node.js utilizada durante el desarrollo del proyecto.
+**Versión de Node.js:** se necesita Node.js **20.19 o superior, 22.13 o superior, o 24 en adelante** (Node 23 no es compatible con ESLint).
+
+Se recomienda **Node.js 22 LTS**, que es la versión con la que se ejecutan el lint y los tests en GitHub Actions.
 
 ## 📥 Instalación
 
@@ -211,7 +220,7 @@ La respuesta esperada es:
 
 ## ✅ Tests
 
-Los tests estan en la carpeta `test/` y usan `node:test` (incluido en Node) y `supertest`.
+Los tests están en la carpeta `test/` y usan `node:test` (incluido en Node) y `supertest`.
 
 ```bash
 npm test
@@ -223,27 +232,27 @@ Con reporte de cobertura:
 npm run test:coverage
 ```
 
-Que se prueba:
+Qué se prueba:
 
-- `test/api.test.js`: endpoint `/api/health`, rutas inexistentes y archivos estaticos.
-- `test/controles.test.js`: `obtenerControles`, nombres de unidades y validacion del login, con casos normales, limite y de error.
-- `test/datos.test.js`: que los checklists de `data.js` esten bien cargados.
+- `test/api.test.js`: endpoint `/api/health`, rutas inexistentes y archivos estáticos.
+- `test/controles.test.js`: `obtenerControles`, nombres de unidades y validación del login, con casos normales, límite y de error.
+- `test/datos.test.js`: que los checklists de `data.js` estén bien cargados.
 
-Si todo esta bien la salida termina con `fail 0`. Los tests marcados como `todo` son problemas detectados en los datos que todavia no corregimos; se muestran pero no hacen fallar la corrida.
+Si todo está bien la salida termina con `fail 0`. Los tests marcados como `todo` son problemas detectados en los datos que todavía no corregimos; se muestran pero no hacen fallar la corrida.
 
-El detalle de cada caso y por que lo elegimos esta en [docs/testing.md](docs/testing.md).
+El detalle de cada caso y por qué lo elegimos está en [docs/testing.md](docs/testing.md).
 
-## 🔍 Calidad de codigo
+## 🔍 Calidad de código
 
 ```bash
 npm run lint     # ESLint
 npm run check    # lint + tests
 ```
 
-Que encontramos con ESLint y los tests, y que cambiamos: [docs/calidad.md](docs/calidad.md).
+Qué encontramos con ESLint y los tests, y qué cambiamos: [docs/calidad.md](docs/calidad.md).
 
 ## 🚧 Estado actual
 
 El proyecto se encuentra en desarrollo. Cuenta con la base técnica en Node.js y Express y con un prototipo funcional del frontend, que todavía no está conectado a una base de datos.
 
-Tiene tests automatizados del backend, de la logica del checklist y de los datos. La interfaz (navegacion y pantallas) todavia se prueba a mano.
+Tiene tests automatizados del backend, de la lógica del checklist y de los datos. La interfaz (navegación y pantallas) todavía se prueba a mano.

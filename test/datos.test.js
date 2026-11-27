@@ -50,6 +50,16 @@ describe("items de los checklists", () => {
         }
     });
 
+    test("todos los items tienen cantidad", () => {
+        // En AUTO la cantidad es "-" (no aplica), pero el campo tiene que estar
+        for (const { sector, id, lista } of todasLasListas()) {
+            lista.forEach((item, i) => {
+                assert.equal(typeof item.cant, "string", `${sector}/${id} item ${i} sin cant`);
+                assert.ok(item.cant.trim().length > 0, `${sector}/${id} item ${i} con cant vacia`);
+            });
+        }
+    });
+
     test("el tipo de cada item es uno de los que sabe dibujar renderizarChecklist", () => {
         for (const { sector, id, lista } of todasLasListas()) {
             lista.forEach((item, i) => {
