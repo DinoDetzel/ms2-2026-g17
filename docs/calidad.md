@@ -60,7 +60,7 @@ El nombre que escribe el usuario en el login se mostraba con `innerHTML`. Si alg
 
 ## Verificacion
 
-- `npm run check`: lint sin errores y 30 tests pasando (2 `todo`).
+- `npm run check`: lint sin errores y 31 tests pasando (2 `todo`).
 - Probado a mano en `localhost:3000`: login, grilla de materiales (13 botones), checklist de MAT U-2 (118 items), unidad 3 de automotores con sus dos controles de combustible, y que el nombre con HTML se muestra como texto.
 
 ## Pendientes
